@@ -46,13 +46,26 @@ function inventory() {
                         selection = results[i];
                     }
                 }
-                if (selection.stock_quantity > parseInt(answer.quantity)) {
+                if (selection.stock_quantity < parseInt (answer.quantity)){
+                    console.log("Insufficient Quantity!")
+                    inventory();
+                } else {
+                //else if (selection.stock_quantity >= parseInt(answer.quantity)){
+                    var purchased = answer.quantity;
+                    var total = selection.stock_quantity - purchased;
+                    console.log(typeof total,total,selection.item_id)
+                    console.log("Thank you for purchasing " + answer.quantity + " " + selection.product_name + "'s!")
+                    connection.query("UPDATE products SET ? WHERE ?",
                     
-                    connection.query("update products set ? where ?",
-                        [{stock_quantity: total}, {id: results[0].id}],
-                        function () {
-                            displayProducts();
-                        })
+                        [{
+                            stock_quantity: total
+                        }, 
+                        {   item_id: selection.item_id
+                        }],  
+                    
+                    
+                        
+                        )
 
                 }
             });

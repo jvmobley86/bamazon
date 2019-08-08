@@ -19,5 +19,6 @@
   "dependencies": {
     "mysql": "^2.17.1",
     "mysql2": "^1.6.5"
-  }
+  },
+  "devDependencies": {}
 }
