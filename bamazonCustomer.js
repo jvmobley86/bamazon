@@ -17,6 +17,7 @@ connection.connect(function (err) {
 //query database to show all items available for purchase 
 function inventory() {
     connection.query("SELECT * FROM products", function (err, results) {
+
         if (err) throw err;
         //prompt user to purchase an item
         inquirer
@@ -40,35 +41,45 @@ function inventory() {
                 }
             ])
             .then(function (answer) {
+
                 var selection;
                 for (var i = 0; i < results.length; i++) {
+                    // console.log(results[i].product_name)
+                    // console.log(answer.choice);
                     if (results[i].product_name === answer.choice) {
                         selection = results[i];
+                        // console.log(selection);
+                        if (selection.stock_quantity < parseInt(answer.quantity)) {
+                            console.log("Insufficient Quantity! Please make a new selection.")
+                            inventory();
+                        } else {
+                            //else if (selection.stock_quantity >= parseInt(answer.quantity)){
+                            // (answer.quantity * selection.price); {
+                                var price = answer.quantity * selection.price;
+                                // price.push(results)
+                                console.log("Total Price: $" + price);
+                                var purchased = answer.quantity;
+                                var total = selection.stock_quantity - purchased;
+                                
+                                console.log("Thank you for purchasing " + answer.quantity + " " + selection.product_name + "'s!")
+                                connection.query("UPDATE products SET ? WHERE ?",
+
+                                    [{
+                                        stock_quantity: total
+                                    },
+                                    {
+                                        item_id: selection.item_id
+                                    }],
+
+
+
+                                )
+
+                            // }
+                        };
                     }
                 }
-                if (selection.stock_quantity < parseInt (answer.quantity)){
-                    console.log("Insufficient Quantity!")
-                    inventory();
-                } else {
-                //else if (selection.stock_quantity >= parseInt(answer.quantity)){
-                    var purchased = answer.quantity;
-                    var total = selection.stock_quantity - purchased;
-                    console.log(typeof total,total,selection.item_id)
-                    console.log("Thank you for purchasing " + answer.quantity + " " + selection.product_name + "'s!")
-                    connection.query("UPDATE products SET ? WHERE ?",
-                    
-                        [{
-                            stock_quantity: total
-                        }, 
-                        {   item_id: selection.item_id
-                        }],  
-                    
-                    
-                        
-                        )
 
-                }
-            });
+            })
     })
 }
-
